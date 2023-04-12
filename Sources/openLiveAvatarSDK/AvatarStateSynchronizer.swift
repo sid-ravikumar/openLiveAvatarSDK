@@ -15,11 +15,11 @@ public class AvatarStateSynchronizer {
         channel.publish(event, data: jsonData)
     }
 
-    public func subscribeToStateUpdates(event: String, completion: @escaping (Result<Codable, Error>) -> Void) {
+    public func subscribeToStateUpdates<T: Codable>(event: String, completion: @escaping (Result<T, Error>) -> Void) {
         channel.subscribe(event) { message in
             if let data = message.data as? Data {
                 do {
-                    let decodedData = try JSONDecoder().decode(Codable.self, from: data)
+                    let decodedData = try JSONDecoder().decode(T.self, from: data)
                     completion(.success(decodedData))
                 } catch {
                     completion(.failure(error))
@@ -29,6 +29,7 @@ public class AvatarStateSynchronizer {
             }
         }
     }
+
 }
 
 public enum AvatarStateSynchronizerError: Error {
