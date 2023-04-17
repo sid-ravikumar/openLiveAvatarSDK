@@ -29,10 +29,8 @@ public class AvatarStateSynchronizer {
             }
         }
     }
-
 }
 
 public enum AvatarStateSynchronizerError: Error {
     case dataConversionFailed
 }
-
