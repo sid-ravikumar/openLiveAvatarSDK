@@ -9,12 +9,13 @@ public class LiveAvatarController: NSObject {
     public var skView: SKView
     var faceScene: AnimatedFaceScene?
     
-    public init(apiKey: String, channelName: String) {
+    public init(apiKey: String, channelName: String, view: UIView) {
         print("Information Information")
         self.synchronizer = AvatarStateSynchronizer(apiKey: apiKey, channelName: channelName)
-        skView = SKView()
+        skView = SKView(frame: view.bounds)
         faceScene = AnimatedFaceScene()
         faceScene?.didMove(to: skView)
+        view.addSubview(skView)
         super.init()
     }
     
