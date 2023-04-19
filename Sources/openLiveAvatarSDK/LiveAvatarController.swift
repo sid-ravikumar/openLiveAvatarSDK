@@ -4,12 +4,17 @@ import ARKit
 public class LiveAvatarController: NSObject {
     private let synchronizer: AvatarStateSynchronizer
     private var avatars: [String: Avatar] = [:]
-    public var FrontARSCNView = ARSCNView()
+    public var frontARSCNView = ARSCNView()
     private var timeofcurrent = Date().timeIntervalSince1970
+    public var skView: SKView
+    var faceScene: AnimatedFaceScene?
     
     public init(apiKey: String, channelName: String) {
         print("Information Information")
         self.synchronizer = AvatarStateSynchronizer(apiKey: apiKey, channelName: channelName)
+        skView = SKView()
+        faceScene = AnimatedFaceScene()
+        faceScene?.didMove(to: skView)
         super.init()
     }
     
@@ -20,24 +25,33 @@ public class LiveAvatarController: NSObject {
         }
         print("Face tracking is supported")
 
-        FrontARSCNView.delegate = self
-        FrontARSCNView.session.delegate = self
+        frontARSCNView.delegate = self
+        frontARSCNView.session.delegate = self
         
         setupARFaceTracking()
         
-        //call ExARLive2D classes to start capturing face motion
         synchronizer.subscribeToStateUpdates(event:  "avatar-state-update") { [weak self] (result: Result<AvatarState, Error>) in
             switch result {
             case .success(let avatarState):
-                self?.updateAvatars(with: avatarState)
+                self?.faceScene?.updateFaceComponents(self?.getBlendShapes(avatarState) ?? [ARFaceAnchor.BlendShapeLocation: NSNumber]())
+                self?.skView.presentScene(self?.faceScene)
             case .failure(let error):
                 print("Failed to receive avatar state update:", error)
             }
         }
     }
+    
+    public func getBlendShapes(_ avatarState: AvatarState) -> [ARFaceAnchor.BlendShapeLocation: NSNumber]{
+        var blendShapes: [ARFaceAnchor.BlendShapeLocation: NSNumber] = [ARFaceAnchor.BlendShapeLocation: NSNumber]()
+        blendShapes[.eyeBlinkLeft] = NSNumber(value: avatarState.eyeBlinkLeft)
+        blendShapes[.eyeBlinkRight] = NSNumber(value: avatarState.eyeBlinkRight)
+        blendShapes[.mouthFunnel] = NSNumber(value: avatarState.mouthFunnel)
+        blendShapes[.jawOpen] = NSNumber(value: avatarState.jawOpen)
+        return blendShapes
+    }
 
     public func stopCapture() {
-        //call ExARLive2D classes to stop capturing face motion
+        
     }
 
     public func addAvatar(id: String, avatar: Avatar) {
@@ -73,7 +87,7 @@ extension LiveAvatarController: ARSessionDelegate {
             print("Turning maximumNumberOfTrackedFaces to 0")
         } // default value is one
         
-        FrontARSCNView.session.run(configuration, options: [.resetTracking, .removeExistingAnchors])
+        frontARSCNView.session.run(configuration, options: [.resetTracking, .removeExistingAnchors])
     }
 
     public func session(_: ARSession, didFailWithError error: Error) {
@@ -120,21 +134,15 @@ extension LiveAvatarController: ARSCNViewDelegate {
         guard let faceAnchor = anchor as? ARFaceAnchor else { return }
         guard let eyeBlinkLeft = faceAnchor.blendShapes[.eyeBlinkLeft] as? Float,
               let eyeBlinkRight = faceAnchor.blendShapes[.eyeBlinkRight] as? Float,
-              let browInnerUp = faceAnchor.blendShapes[.browInnerUp] as? Float,
-              let browOuterUpLeft = faceAnchor.blendShapes[.browOuterUpLeft] as? Float,
-              let browOuterUpRight = faceAnchor.blendShapes[.browOuterUpRight] as? Float,
               let mouthFunnel = faceAnchor.blendShapes[.mouthFunnel] as? Float,
-              let jawOpen = faceAnchor.blendShapes[.jawOpen] as? Float,
-              let cheekPuff = faceAnchor.blendShapes[.cheekPuff] as? Float
+              let jawOpen = faceAnchor.blendShapes[.jawOpen] as? Float
         else { return }
         
-        print(eyeBlinkLeft)
-        let newFaceMatrix = SCNMatrix4(faceAnchor.transform)
-        let faceNode = SCNNode()
-        faceNode.transform = newFaceMatrix
-        
-        // do updated here.
-        // print(Date().timeIntervalSince1970 - timeofcurrent) // 0.0166s
-        timeofcurrent = Date().timeIntervalSince1970
+        let avatarState = AvatarState(eyeBlinkRight: eyeBlinkRight, eyeBlinkLeft: eyeBlinkLeft, mouthFunnel: mouthFunnel, jawOpen: jawOpen)
+        do {
+            try synchronizer.publishStateUpdate(event: "avatar-state-update", data: avatarState)
+        } catch {
+            print(error)
+        }
     }
 }
