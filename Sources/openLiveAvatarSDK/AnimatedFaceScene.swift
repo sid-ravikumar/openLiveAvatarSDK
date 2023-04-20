@@ -1,8 +1,10 @@
 import SpriteKit
 import ARKit
 
-class AnimatedFaceScene: SKScene {
+public class AnimatedFaceScene: NSObject {
     // Set up face component nodes
+    
+    public let animatedFaceScene = SKScene()
     let leftEye = SKSpriteNode(imageNamed: "leftEye")
     let rightEye = SKSpriteNode(imageNamed: "rightEye")
     let mouth = SKSpriteNode(imageNamed: "mouth")
@@ -11,9 +13,8 @@ class AnimatedFaceScene: SKScene {
     let rightEyeScale = 0.05
     let mouthScale = 0.2
     // Add other face components as needed
-
-    override func didMove(to view: SKView) {
-        // Set up face component nodes in the scene
+    
+    public func moveIt() {
         leftEye.position = CGPoint(x: 300, y: 600)
         rightEye.position = CGPoint(x: 100, y: 600)
         mouth.position = CGPoint(x: 200, y: 400)
@@ -22,11 +23,8 @@ class AnimatedFaceScene: SKScene {
         leftEye.setScale(leftEyeScale)
         rightEye.setScale(rightEyeScale)
         mouth.setScale(mouthScale)
-
-        addChild(leftEye)
-        addChild(rightEye)
-        addChild(mouth)
-        // Add other face components to the scene
+        animatedFaceScene.addChild(leftEye)
+        animatedFaceScene.addChild(rightEye)
     }
 
     // Update face component animations based on blend shape coefficients
