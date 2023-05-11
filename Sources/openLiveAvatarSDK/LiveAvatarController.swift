@@ -35,7 +35,6 @@ public class LiveAvatarController: NSObject {
             switch result {
             case .success(let avatarState):
                 self?.faceScene?.updateFaceComponents(self?.getBlendShapes(avatarState) ?? [ARFaceAnchor.BlendShapeLocation: NSNumber]())
-                self?.skView.presentScene(self?.faceScene)
             case .failure(let error):
                 print("Failed to receive avatar state update:", error)
             }
