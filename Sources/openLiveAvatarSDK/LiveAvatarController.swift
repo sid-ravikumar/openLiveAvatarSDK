@@ -31,15 +31,15 @@ public class LiveAvatarController: NSObject {
         
         setupARFaceTracking()
         
-//        synchronizer.subscribeToStateUpdates(event:  "avatar-state-update") { [weak self] (result: Result<AvatarState, Error>) in
-//            switch result {
-//            case .success(let avatarState):
-//                self?.faceScene?.updateFaceComponents(self?.getBlendShapes(avatarState) ?? [ARFaceAnchor.BlendShapeLocation: NSNumber]())
-//                self?.skView.presentScene(self?.faceScene)
-//            case .failure(let error):
-//                print("Failed to receive avatar state update:", error)
-//            }
-//        }
+        synchronizer.subscribeToStateUpdates(event:  "avatar-state-update") { [weak self] (result: Result<AvatarState, Error>) in
+            switch result {
+            case .success(let avatarState):
+                self?.faceScene?.updateFaceComponents(self?.getBlendShapes(avatarState) ?? [ARFaceAnchor.BlendShapeLocation: NSNumber]())
+                self?.skView.presentScene(self?.faceScene)
+            case .failure(let error):
+                print("Failed to receive avatar state update:", error)
+            }
+        }
     }
     
     public func getBlendShapes(_ avatarState: AvatarState) -> [ARFaceAnchor.BlendShapeLocation: NSNumber]{
