@@ -3,8 +3,7 @@ import ARKit
 
 public class AnimatedFaceScene: NSObject {
     // Set up face component nodes
-    
-    public let animatedFaceScene = SKScene()
+    public var animatedFaceScene = SKScene();
     let leftEye = SKSpriteNode(imageNamed: "leftEye")
     let rightEye = SKSpriteNode(imageNamed: "rightEye")
     let mouth = SKSpriteNode(imageNamed: "mouth")
@@ -14,22 +13,24 @@ public class AnimatedFaceScene: NSObject {
     let mouthScale = 0.2
     // Add other face components as needed
     
-    public func moveIt() {
+    public func moveIt(view : UIView) {
+        animatedFaceScene = SKScene(size: view.bounds.size)
         leftEye.position = CGPoint(x: 300, y: 600)
         rightEye.position = CGPoint(x: 100, y: 600)
         mouth.position = CGPoint(x: 200, y: 400)
         // Set up other face components
+        print("test1")
         
         leftEye.setScale(leftEyeScale)
         rightEye.setScale(rightEyeScale)
         mouth.setScale(mouthScale)
         animatedFaceScene.addChild(leftEye)
         animatedFaceScene.addChild(rightEye)
+        animatedFaceScene.addChild(mouth)
     }
 
     // Update face component animations based on blend shape coefficients
     func updateFaceComponents(_ blendShapes: [ARFaceAnchor.BlendShapeLocation: NSNumber]) {
-        
         // Example: Update eye scale based on eye blink blend shape coefficients
         if let leftEyeBlink = blendShapes[.eyeBlinkLeft]?.floatValue {
             leftEye.yScale = leftEyeScale - Double(leftEyeBlink) * leftEyeScale

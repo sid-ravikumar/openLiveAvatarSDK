@@ -7,15 +7,16 @@ public class LiveAvatarController: NSObject {
     public var frontARSCNView = ARSCNView()
     private var timeofcurrent = Date().timeIntervalSince1970
     public var skView: SKView
-    var faceScene: AnimatedFaceScene?
+    var faceScene: AnimatedFaceScene
     
-    public init(apiKey: String, channelName: String) {
+    public init(apiKey: String, channelName: String, view : UIView) {
         print("Information Information")
         self.synchronizer = AvatarStateSynchronizer(apiKey: apiKey, channelName: channelName)
-        skView = SKView()
+        self.skView = SKView(frame: view.frame)
         faceScene = AnimatedFaceScene()
-        skView.presentScene(faceScene?.animatedFaceScene)
-        //faceScene.didMove(to: skView)
+        faceScene.moveIt(view: view)
+        skView.ignoresSiblingOrder = true
+        self.skView.presentScene(faceScene.animatedFaceScene)
         super.init()
     }
     
@@ -34,7 +35,8 @@ public class LiveAvatarController: NSObject {
         synchronizer.subscribeToStateUpdates(event:  "avatar-state-update") { [weak self] (result: Result<AvatarState, Error>) in
             switch result {
             case .success(let avatarState):
-                self?.faceScene?.updateFaceComponents(self?.getBlendShapes(avatarState) ?? [ARFaceAnchor.BlendShapeLocation: NSNumber]())
+                print("success")
+                self?.faceScene.updateFaceComponents(self?.getBlendShapes(avatarState) ?? [ARFaceAnchor.BlendShapeLocation: NSNumber]())
             case .failure(let error):
                 print("Failed to receive avatar state update:", error)
             }
@@ -121,12 +123,10 @@ extension LiveAvatarController: ARSCNViewDelegate {
     // MARK: - ARSCNViewDelegate
     /// - Tag: ARNodeTracking
     public func renderer(_: SCNSceneRenderer, didAdd _: SCNNode, for _: ARAnchor) {
-        print("renderer being called")
     }
 
     /// - Tag: ARFaceGeometryUpdate
     public func renderer(_: SCNSceneRenderer, didUpdate _: SCNNode, for anchor: ARAnchor) {
-        print("renderer being called2")
         guard let faceAnchor = anchor as? ARFaceAnchor else { return }
         guard let eyeBlinkLeft = faceAnchor.blendShapes[.eyeBlinkLeft] as? Float,
               let eyeBlinkRight = faceAnchor.blendShapes[.eyeBlinkRight] as? Float,
