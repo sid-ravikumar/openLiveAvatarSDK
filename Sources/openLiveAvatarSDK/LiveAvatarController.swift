@@ -21,7 +21,7 @@ public class LiveAvatarController: NSObject {
                 print("Failed to receive avatar state update:", error)
             }
         }
-    }
+    }g
     
     public func addWrapperToUIVIew(view:UIView) {
         let wrapper = AnimatedFaceSceneWrapper(frame: view.frame, emittingFunc: self.emittingFromFacesceneWrapperCallback)
