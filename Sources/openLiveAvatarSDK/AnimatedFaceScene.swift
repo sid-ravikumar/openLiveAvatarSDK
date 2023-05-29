@@ -4,22 +4,27 @@ import ARKit
 public class AnimatedFaceScene: NSObject {
     // Set up face component nodes
     public var animatedFaceScene = SKScene();
-    let leftEye = SKSpriteNode(imageNamed: "leftEye")
-    let rightEye = SKSpriteNode(imageNamed: "rightEye")
-    let mouth = SKSpriteNode(imageNamed: "mouth")
+    var leftEye = SKSpriteNode(imageNamed: "leftEye")
+    var rightEye = SKSpriteNode(imageNamed: "rightEye")
+    var mouth = SKSpriteNode(imageNamed: "mouth")
+    
+    public init(leftEyeImage : String, rightEyeImage : String, mouthImage : String) {
+        super.init()
+        leftEye = SKSpriteNode(imageNamed: leftEyeImage)
+        rightEye = SKSpriteNode(imageNamed: rightEyeImage)
+        mouth = SKSpriteNode(imageNamed: mouthImage)
+    }
     
     let leftEyeScale = 0.05
     let rightEyeScale = 0.05
     let mouthScale = 0.2
     // Add other face components as needed
     
-    public func moveIt(view : UIView) {
-        animatedFaceScene = SKScene(size: view.bounds.size)
+    public func moveIt(bound : CGSize) {
+        animatedFaceScene = SKScene(size: bound)
         leftEye.position = CGPoint(x: 300, y: 600)
         rightEye.position = CGPoint(x: 100, y: 600)
         mouth.position = CGPoint(x: 200, y: 400)
-        // Set up other face components
-        print("test1")
         
         leftEye.setScale(leftEyeScale)
         rightEye.setScale(rightEyeScale)
@@ -30,32 +35,30 @@ public class AnimatedFaceScene: NSObject {
     }
 
     // Update face component animations based on blend shape coefficients
-    func updateFaceComponents(_ blendShapes: [ARFaceAnchor.BlendShapeLocation: NSNumber]) {
+    func updateFaceComponents(avatarState : AvatarState) {
         // Example: Update eye scale based on eye blink blend shape coefficients
-        if let leftEyeBlink = blendShapes[.eyeBlinkLeft]?.floatValue {
-            leftEye.yScale = leftEyeScale - Double(leftEyeBlink) * leftEyeScale
-        }
+        let leftEyeBlink = avatarState.eyeBlinkLeft   // {
+        leftEye.yScale = leftEyeScale - Double(leftEyeBlink) * leftEyeScale
+        //}
         
-        if let rightEyeBlink = blendShapes[.eyeBlinkRight]?.floatValue {
-            rightEye.yScale = leftEyeScale - Double(rightEyeBlink) * rightEyeScale
-        }
+        let rightEyeBlink = avatarState.eyeBlinkRight // {
+        rightEye.yScale = rightEyeScale - Double(rightEyeBlink) * rightEyeScale
+        //}
         
-        if let mouthFunnel = blendShapes[.mouthFunnel]?.floatValue {
-            mouth.xScale = mouthScale - Double(mouthFunnel) * mouthScale
-        }
+        let mouthFunnel = avatarState.mouthFunnel     // {
+        mouth.xScale = mouthScale - Double(mouthFunnel) * mouthScale
+        //}
         
-        if let jawOpen = blendShapes[.jawOpen]?.floatValue {
-            print(jawOpen)
-            mouth.yScale = Double(jawOpen) * mouthScale
-        }
-        
+        let jawOpen = avatarState.jawOpen             // {
+        print(jawOpen)
+        mouth.yScale = Double(jawOpen) * mouthScale
+//        }
 //        if let cheekPuff = blendShapes[.cheekPuff]?.floatValue {
 //            print(cheekPuff)
 //        }
-        
 //        if let jawOpen = blendShapes[.jawOpen]?.floatValue {
 //            rightEye.yScale = leftEyeScale - Double(jawOpen) * rightEyeScale
 //        }
-        // Update other face components based on blend shape coefficients
+//        Update other face components based on blend shape coefficients
     }
 }
