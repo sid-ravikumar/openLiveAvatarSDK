@@ -8,7 +8,7 @@
 import Foundation
 import ARKit
 
-public class AnimatedFaceSceneWrapper: NSObject {
+public class AnimatedFaceSceneWrapper: NSObject, Avatar {
     private var avatars: [String: Avatar] = [:]
     public var frontARSCNView = ARSCNView()
     private var timeofcurrent = Date().timeIntervalSince1970

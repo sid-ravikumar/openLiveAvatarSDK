@@ -1,3 +1,3 @@
 public protocol Avatar {
-    func update(with state: AvatarState)
+    func update(avatarState state: AvatarState)
 }

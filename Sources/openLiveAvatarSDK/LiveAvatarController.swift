@@ -16,7 +16,6 @@ public class LiveAvatarController: NSObject {
             case .success(let avatarState):
                 print("success")
                 self?.updateAvatars(with: avatarState)
-                
             case .failure(let error):
                 print("Failed to receive avatar state update:", error)
             }
