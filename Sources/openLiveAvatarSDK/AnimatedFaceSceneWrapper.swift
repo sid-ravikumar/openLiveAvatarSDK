@@ -9,22 +9,27 @@ import Foundation
 import ARKit
 
 public class AnimatedFaceSceneWrapper: NSObject, Avatar {
+    public var skView: SKView
+    public var id: String
     private var avatars: [String: Avatar] = [:]
     public var frontARSCNView = ARSCNView()
     private var timeofcurrent = Date().timeIntervalSince1970
-    public var skView: SKView
-    var faceScene: AnimatedFaceScene 
+    var faceScene: AnimatedFaceScene
     var functionToEmitMessageFrom : ((AvatarState) -> Void)?
     let floatingWindow = UIWindow(frame: UIScreen.main.bounds)
     
-    public init(frame : CGRect, emittingFunc: @escaping ((AvatarState) -> Void)) {
+    public init(frame : CGRect, id: String) {
+        self.id = id
         self.skView = SKView(frame: frame)
-        self.functionToEmitMessageFrom = emittingFunc
         faceScene = AnimatedFaceScene(leftEyeImage: "leftEye", rightEyeImage: "rightEye", mouthImage: "mouth")
         faceScene.moveIt(bound: frame.size)
         skView.ignoresSiblingOrder = true
         self.skView.presentScene(faceScene.animatedFaceScene)
         super.init()
+    }
+    
+    public func addEmitFunction(emittingFunc: @escaping ((AvatarState) -> Void)){
+        self.functionToEmitMessageFrom = emittingFunc
     }
     
     public func startCapture() {
@@ -118,7 +123,7 @@ extension AnimatedFaceSceneWrapper: ARSCNViewDelegate {
               let jawOpen = faceAnchor.blendShapes[.jawOpen] as? Float
         else { return }
         
-        let avatarState = AvatarState(eyeBlinkRight: eyeBlinkRight, eyeBlinkLeft: eyeBlinkLeft, mouthFunnel: mouthFunnel, jawOpen: jawOpen)
+        let avatarState = AvatarState(eyeBlinkRight: eyeBlinkRight, eyeBlinkLeft: eyeBlinkLeft, mouthFunnel: mouthFunnel, jawOpen: jawOpen, id: self.id)
         self.functionToEmitMessageFrom!(avatarState)
     }
 }

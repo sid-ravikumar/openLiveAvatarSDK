@@ -4,4 +4,5 @@ public struct AvatarState: Codable {
     var eyeBlinkLeft: Float
     var mouthFunnel: Float
     var jawOpen: Float
+    var id: String
 }
