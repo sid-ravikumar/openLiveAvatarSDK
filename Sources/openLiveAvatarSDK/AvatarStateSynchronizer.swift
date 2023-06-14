@@ -1,23 +1,23 @@
 import Foundation
-import Ably
+import LiveKit
 
 public class AvatarStateSynchronizer {
-    private let ablyRealtime: ARTRealtime
-    private let channel: ARTRealtimeChannel
+    private let livekitClient: LivekitClient
+    private let room: Room
 
-    public init(apiKey: String, channelName: String) {
-        self.ablyRealtime = ARTRealtime(key: apiKey)
-        self.channel = ablyRealtime.channels.get(channelName)
+    public init(apiKey: String, roomName: String) {
+        self.livekitClient = LivekitClient(apiKey: apiKey)
+        self.room = livekitClient.join(roomName: roomName)
     }
 
     public func publishStateUpdate(event: String, data: Codable) throws {
         let jsonData = try JSONEncoder().encode(data)
-        channel.publish(event, data: jsonData)
+        room.send(data: jsonData, kind: event)
     }
 
     public func subscribeToStateUpdates<T: Codable>(event: String, completion: @escaping (Result<T, Error>) -> Void) {
-        channel.subscribe(event) { message in
-            if let data = message.data as? Data {
+        room.onMessage(kind: event) { message in
+            if let data = message.data {
                 do {
                     let decodedData = try JSONDecoder().decode(T.self, from: data)
                     completion(.success(decodedData))
@@ -34,3 +34,4 @@ public class AvatarStateSynchronizer {
 public enum AvatarStateSynchronizerError: Error {
     case dataConversionFailed
 }
+
