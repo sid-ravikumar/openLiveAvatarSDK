@@ -5,9 +5,9 @@ public class AvatarStateSynchronizer {
     private let livekitClient: LivekitClient
     private let room: Room
 
-    public init(apiKey: String, roomName: String) {
+    public init(apiKey: String, channelName: String) {
         self.livekitClient = LivekitClient(apiKey: apiKey)
-        self.room = livekitClient.join(roomName: roomName)
+        self.room = livekitClient.join(roomName: channelName)
     }
 
     public func publishStateUpdate(event: String, data: Codable) throws {
