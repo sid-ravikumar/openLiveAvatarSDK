@@ -1,4 +1,4 @@
-import Ably
+
 
 public struct openLiveAvatarSDK {
     public private(set) var text = "Hello, World!"
