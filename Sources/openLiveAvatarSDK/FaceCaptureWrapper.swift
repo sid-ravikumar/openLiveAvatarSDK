@@ -2,34 +2,23 @@
 //  File.swift
 //  
 //
-//  Created by Yifu Yin on 5/23/23.
+//  Created by Yifu Yin on 6/13/23.
 //
 
 import Foundation
 import ARKit
+import SceneKit
 
-public class AnimatedFaceSceneWrapper: NSObject, Avatar {
-    public var skView: SKView
-    public var id: String
-    private var avatars: [String: Avatar] = [:]
+public class FaceCaptureWrapper: NSObject {
+    
+    public var emit_id: String = ""
     public var frontARSCNView = ARSCNView()
     private var timeofcurrent = Date().timeIntervalSince1970
-    var faceScene: AnimatedFaceScene
     var functionToEmitMessageFrom : ((AvatarState) -> Void)?
-    let floatingWindow = UIWindow(frame: UIScreen.main.bounds)
     
-    public init(frame : CGRect, id: String) {
-        self.id = id
-        self.skView = SKView(frame: frame)
-        faceScene = AnimatedFaceScene(leftEyeImage: "leftEye", rightEyeImage: "rightEye", mouthImage: "mouth")
-        faceScene.moveIt(bound: frame.size)
-        skView.ignoresSiblingOrder = true
-        self.skView.presentScene(faceScene.animatedFaceScene)
-        super.init()
-    }
-    
-    public func addEmitFunction(emittingFunc: @escaping ((AvatarState) -> Void)){
+    public func addEmitFunction(emittingFunc: @escaping ((AvatarState) -> Void), id: String) {
         self.functionToEmitMessageFrom = emittingFunc
+        self.emit_id = id
     }
     
     public func startCapture() {
@@ -44,20 +33,11 @@ public class AnimatedFaceSceneWrapper: NSObject, Avatar {
     }
     
     public func addToUIWindow(view: UIView){
-//        floatingWindow.windowLevel = UIWindow.Level.alert + 1;
-//        floatingWindow.addSubview(frontARSCNView)
-//        floatingWindow.addSubview(skView)
-//        floatingWindow.makeKeyAndVisible()
         view.addSubview(frontARSCNView)
-        view.addSubview(skView)
-    }
-    
-    public func update(avatarState: AvatarState) {
-        faceScene.updateFaceComponents(avatarState: avatarState)
     }
 }
 
-extension AnimatedFaceSceneWrapper: ARSessionDelegate {
+extension FaceCaptureWrapper: ARSessionDelegate {
     /// ARFaceTrackingSetup
     func setupARFaceTracking() {
         // check if the device supports ARFaceTracking
@@ -108,7 +88,7 @@ extension AnimatedFaceSceneWrapper: ARSessionDelegate {
     }
 }
 
-extension AnimatedFaceSceneWrapper: ARSCNViewDelegate {
+extension FaceCaptureWrapper: ARSCNViewDelegate {
     // MARK: - Properties
     // MARK: - ARSCNViewDelegate
     /// - Tag: ARNodeTracking
@@ -123,7 +103,7 @@ extension AnimatedFaceSceneWrapper: ARSCNViewDelegate {
               let jawOpen = faceAnchor.blendShapes[.jawOpen] as? Float
         else { return }
         
-        let avatarState = AvatarState(eyeBlinkRight: eyeBlinkRight, eyeBlinkLeft: eyeBlinkLeft, mouthFunnel: mouthFunnel, jawOpen: jawOpen, id: self.id)
+        let avatarState = AvatarState(eyeBlinkRight: eyeBlinkRight, eyeBlinkLeft: eyeBlinkLeft, mouthFunnel: mouthFunnel, jawOpen: jawOpen, id: self.emit_id)
         self.functionToEmitMessageFrom!(avatarState)
     }
 }

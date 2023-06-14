@@ -4,6 +4,7 @@ import ARKit
 public class LiveAvatarController: NSObject {
     private let synchronizer: AvatarStateSynchronizer
     private var avatars: [String: Avatar] = [:]
+    private var faceCaptureWrapper : FaceCaptureWrapper?
     private var timeofcurrent = Date().timeIntervalSince1970
     
     public init(apiKey: String, channelName: String) {
@@ -20,17 +21,15 @@ public class LiveAvatarController: NSObject {
         }
     }
     
-    public func addWrapperToUIVIew(rect: CGRect, view:UIView, name: String) {
-        let wrapper = AnimatedFaceSceneWrapper(frame: rect, id: name)
-        wrapper.startCapture()
-        wrapper.addEmitFunction(emittingFunc: self.emittingFromFacesceneWrapperCallback)
-        self.addAvatar(id: name, avatar: wrapper)
-        wrapper.addToUIWindow(view: view)
+    public func addFaceCaptureToUIView(view:UIView, emit_id: String) {
+        faceCaptureWrapper = FaceCaptureWrapper.init()
+        faceCaptureWrapper?.addEmitFunction(emittingFunc: self.emittingFromFacesceneWrapperCallback, id: emit_id)
+        faceCaptureWrapper?.addToUIWindow(view: view)
+        faceCaptureWrapper?.startCapture()
     }
     
     public func addListenerWrapperToUIVIew(rect: CGRect, view:UIView, name: String) {
         let wrapper = AnimatedFaceSceneListenerWrapper(frame: rect, id: name)
-        wrapper.addEmitFunction(emittingFunc: self.emittingFromFacesceneWrapperCallback)
         self.addAvatar(id: name, avatar: wrapper)
         wrapper.addToUIWindow(view: view)
     }
@@ -52,7 +51,8 @@ public class LiveAvatarController: NSObject {
     }
 
     private func updateAvatars(with state: AvatarState) {
-        for (_, avatar) in avatars {
+        
+        for (idx, avatar) in avatars {
             avatar.update(avatarState: state)
         }
     }

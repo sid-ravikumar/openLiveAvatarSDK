@@ -10,11 +10,9 @@ import ARKit
 
 public class AnimatedFaceSceneListenerWrapper: NSObject, Avatar {
     public var id: String
-    private var avatars: [String: Avatar] = [:]
     private var timeofcurrent = Date().timeIntervalSince1970
     public var skView: SKView
     var faceScene: AnimatedFaceScene
-    var functionToEmitMessageFrom : ((AvatarState) -> Void)?
     let floatingWindow = UIWindow(frame: UIScreen.main.bounds)
     
     public init(frame : CGRect, id: String) {
@@ -25,10 +23,6 @@ public class AnimatedFaceSceneListenerWrapper: NSObject, Avatar {
         skView.ignoresSiblingOrder = true
         self.skView.presentScene(faceScene.animatedFaceScene)
         super.init()
-    }
-    
-    public func addEmitFunction(emittingFunc: @escaping ((AvatarState) -> Void)) {
-        self.functionToEmitMessageFrom = emittingFunc
     }
     
     public func addToUIWindow(view: UIView){
