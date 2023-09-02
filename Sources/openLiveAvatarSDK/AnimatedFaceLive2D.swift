@@ -235,7 +235,7 @@ public class AnimatedFaceLive2D: NSObject, GLKViewDelegate {
         live2dModel.setParam("ParamEyeLOpen", value: 1.0 - avatarState.eyeBlinkLeft)
         live2dModel.setParam("ParamEyeROpen", value: 1.0 - avatarState.eyeBlinkRight)
 
-        live2dModel.setParam("ParamMouthOpenY", value: 0.3+avatarState.jawOpen * 2.8)
+        live2dModel.setParam("ParamMouthOpenY", value: 0.05+avatarState.jawOpen * 3.5)
         live2dModel.setParam("ParamEyeLSmile", value: 0.1+avatarState.eyeSquintLeft * 2.8)
 //        live2dModel.setParam("ParamMouthForm", value: 1 - avatarState.mouthFunnel * 2)
         
