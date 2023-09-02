@@ -1,5 +1,6 @@
 import Foundation
 import ARKit
+import ObjcCubismSdk
 
 public class LiveAvatarController: NSObject {
     private let synchronizer: AvatarStateSynchronizer
@@ -10,6 +11,9 @@ public class LiveAvatarController: NSObject {
     public init(apiKey: String, channelName: String) {
         self.synchronizer = AvatarStateSynchronizer(apiKey: apiKey, channelName: channelName)
         super.init()
+        
+        Live2DCubism.initL2D()
+        print(Live2DCubism.live2DVersion() ?? "cannot get Live2DCubism.live2DVersion")
         
         print("Subscribed to the LiveAvatarController wiht all events")
         synchronizer.subscribeToStateUpdates(event:  "avatar-state-update") { [weak self] (result: Result<AvatarState, Error>) in
@@ -32,20 +36,14 @@ public class LiveAvatarController: NSObject {
         faceCaptureWrapper?.startCapture()
     }
     
-    public func addLiveAvatarFromTargetId(frame: CGRect, addLiveAvatarToView:UIView, emitId: String) {
+    public func addLiveAvatarFromTargetId(frame: CGRect, addLiveAvatarToView:UIView, emitId: String) -> UIView {
         let wrapper = AnimatedFaceSceneListenerWrapper(frame: frame, id: emitId)
         self.addAvatar(id: emitId, avatar: wrapper)
-        wrapper.addToUIWindow(view: addLiveAvatarToView, frame: frame)
-    }
-    
-    public func addLiveAvatarFromTargetId2(frame: CGRect, addLiveAvatarToView:UIView, emitId: String) {
-        let wrapper = AnimatedFaceSceneListenerWrapper(frame: frame, id: emitId)
-        self.addAvatar(id: emitId, avatar: wrapper)
-        wrapper.addToUIWindow2(view: addLiveAvatarToView, frame: frame)
+        return wrapper.addToUIWindow(view: addLiveAvatarToView, frame: frame)
     }
     
     public func emittingFromFacesceneWrapperCallback( avatarState : AvatarState){
-        //print("emitting: " + avatarState.id)
+//      print("emitting: " + avatarState.id)
         updateAvatars(with: avatarState)
 //        do {
 //            try synchronizer.publishStateUpdate(event: "avatar-state-update", data: avatarState)

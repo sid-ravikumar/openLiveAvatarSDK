@@ -189,6 +189,8 @@ static Allocator _allocator;
 }
 
 - (void)draw {
-	_userModel->GetRenderer<Live2D::Cubism::Framework::Rendering::CubismRenderer_OpenGLES2>()->DrawModel();
+    Live2D::Cubism::Framework::Rendering::CubismRenderer_OpenGLES2 *renderer = _userModel->GetRenderer<Live2D::Cubism::Framework::Rendering::CubismRenderer_OpenGLES2>();
+    // printf("renderer is at address: %p\n", renderer);
+    renderer->DrawModel();
 }
 @end

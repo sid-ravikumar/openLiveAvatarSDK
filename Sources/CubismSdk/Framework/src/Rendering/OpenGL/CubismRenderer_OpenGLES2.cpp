@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Copyright(c) Live2D Inc. All rights reserved.
  *
  * Use of this source code is governed by the Live2D Open Software license
@@ -1072,11 +1072,11 @@ CubismShader_OpenGLES2::~CubismShader_OpenGLES2()
 
 CubismShader_OpenGLES2* CubismShader_OpenGLES2::GetInstance()
 {
-    if (s_instance == NULL)
-    {
-        s_instance = CSM_NEW CubismShader_OpenGLES2();
-    }
-    return s_instance;
+//    if (s_instance == NULL)
+//    {
+//        s_instance = new CubismShader_OpenGLES2();
+//    }
+    return new CubismShader_OpenGLES2();
 }
 
 void CubismShader_OpenGLES2::DeleteInstance()
@@ -1769,7 +1769,7 @@ void CubismRenderer_OpenGLES2::CheckGlError(const csmChar* message)
 
 CubismRenderer* CubismRenderer::Create()
 {
-    return CSM_NEW CubismRenderer_OpenGLES2();
+    return new CubismRenderer_OpenGLES2();
 }
 
 void CubismRenderer::StaticRelease()
@@ -1981,10 +1981,11 @@ void CubismRenderer_OpenGLES2::DoDrawModel()
     }
 
     //
-    PostDraw();
+    //PostDraw();
 
 }
 
+#include <cstdio>
 void CubismRenderer_OpenGLES2::DrawMesh(csmInt32 textureNo, csmInt32 indexCount, csmInt32 vertexCount
                                         , csmUint16* indexArray, csmFloat32* vertexArray, csmFloat32* uvArray
                                         , csmFloat32 opacity, CubismBlendMode colorBlendMode, csmBool invertedMask)
@@ -2022,7 +2023,7 @@ void CubismRenderer_OpenGLES2::DrawMesh(csmInt32 textureNo, csmInt32 indexCount,
             modelColorRGBA.B *= modelColorRGBA.A;
         }
     }
-
+    //printf("texture id: %i", textureNo);
     GLuint drawTextureId;   // シェーダに渡すテクスチャID
 
     // テクスチャマップからバインド済みテクスチャIDを取得
@@ -2036,7 +2037,11 @@ void CubismRenderer_OpenGLES2::DrawMesh(csmInt32 textureNo, csmInt32 indexCount,
         drawTextureId = -1;
     }
 
-    CubismShader_OpenGLES2::GetInstance()->SetupShaderProgram(
+    if(this->s_instance == NULL){
+        this->s_instance = CubismShader_OpenGLES2::GetInstance();
+    }
+    
+    this->s_instance->SetupShaderProgram(
         this, drawTextureId, vertexCount, vertexArray, uvArray
         , opacity, colorBlendMode, modelColorRGBA, IsPremultipliedAlpha()
         , GetMvpMatrix(), invertedMask
@@ -2053,11 +2058,14 @@ void CubismRenderer_OpenGLES2::DrawMesh(csmInt32 textureNo, csmInt32 indexCount,
 
 void CubismRenderer_OpenGLES2::SaveProfile()
 {
+    
+    // printf("saving profile: %p\n", (void*)&_rendererProfile);
     _rendererProfile.Save();
 }
 
 void CubismRenderer_OpenGLES2::RestoreProfile()
 {
+    // printf("restoring profile: %p\n", (void*)&_rendererProfile);
     _rendererProfile.Restore();
 }
 

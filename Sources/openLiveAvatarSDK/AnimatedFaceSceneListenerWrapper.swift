@@ -22,36 +22,30 @@ public class AnimatedFaceSceneListenerWrapper: NSObject, Avatar {
         super.init()
     }
     
-    public func addToUIWindow(view: UIView, frame: CGRect){
+    public func addToUIWindow(view: UIView, frame: CGRect) -> UIView {
         skView = GLKView(frame: frame, context: faceScene.live2DView)
         skView.backgroundColor =  UIColor(white:1, alpha: 0)
+        faceScene.SetupLive2DModel()
         
-        faceScene.SetupLive2DModel()
-//        skView.drawableColorFormat = GLKViewDrawableColorFormat.RGBA8888;
-//        skView.drawableDepthFormat = GLKViewDrawableDepthFormat.format24;
-//        skView.drawableStencilFormat = GLKViewDrawableStencilFormat.format8;
-//        skView.drawableMultisample = GLKViewDrawableMultisample.multisample4X;
         skView.delegate = faceScene
-        print(view.insertSubview(skView, at: 0), skView)
+        print(view.addSubview(skView), skView)
+        return skView
     }
-    
-    public func addToUIWindow2(view: UIView, frame: CGRect){
-        skView = GLKView(frame: frame, context: faceScene.live2DView)
-        skView.backgroundColor = UIColor(white:1, alpha: 0)
-        faceScene.SetupLive2DModel()
-//        skView.drawableColorFormat = GLKViewDrawableColorFormat.RGBA8888;
-//        skView.drawableDepthFormat = GLKViewDrawableDepthFormat.format24;
-//        skView.drawableStencilFormat = GLKViewDrawableStencilFormat.format8;
-//        skView.drawableMultisample = GLKViewDrawableMultisample.multisample4X;
-        skView.delegate = faceScene
-        print(view.insertSubview(skView, at: 0), skView)
-    }
-    
     
     public func update(avatarState: AvatarState) {
-        if(avatarState.id == self.id){
-            faceScene.updateFaceComponents(avatarState: avatarState)
-            skView.display()
-        }
+       // if(avatarState.id == self.id){
+        faceScene.updateFaceComponents(avatarState: avatarState)
+        skView.bindDrawable()
+        skView.display()
+//        if(avatarState.id == "main-1"){
+ //       skView.
+//            skView.enableSetNeedsDisplay = true
+//        }
+        //skView.setNeedsDisplay()
+       // }
+    }
+    
+    deinit {
+        print("deinit AnimatedFaceSceneListenerWrapper")
     }
 }
