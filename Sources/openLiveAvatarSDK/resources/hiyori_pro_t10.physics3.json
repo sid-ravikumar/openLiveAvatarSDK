@@ -84,6 +84,15 @@
 					"Type": "Angle",
 					"Reflect": false
 				},
+                {
+                    "Source": {
+                        "Target": "Parameter",
+                        "Id": "ParamAngleY"
+                    },
+                    "Weight": 80,
+                    "Type": "Angle",
+                    "Reflect": false
+                },
 				{
 					"Source": {
 						"Target": "Parameter",

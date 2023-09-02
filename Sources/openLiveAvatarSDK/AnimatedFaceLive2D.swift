@@ -211,10 +211,11 @@ public class AnimatedFaceLive2D: NSObject, GLKViewDelegate {
         let newFaceMatrix = SCNMatrix4(avatarState.transform)
         let faceNode = SCNNode()
         faceNode.transform = newFaceMatrix
+        print("angle x y, ", faceNode.eulerAngles.x, faceNode.eulerAngles.y)
 
-        live2dModel.setParam("ParamAngleY", value: faceNode.eulerAngles.x * -360 / Float.pi)
-        live2dModel.setParam("ParamAngleX", value: faceNode.eulerAngles.y * 360 / Float.pi)
-        live2dModel.setParam("ParamAngleZ", value: faceNode.eulerAngles.z * -360 / Float.pi)
+        live2dModel.setParam("ParamAngleY", value: 5*(faceNode.eulerAngles.x-0.02) * -360 / Float.pi)
+        live2dModel.setParam("ParamAngleX", value: 2.2*(faceNode.eulerAngles.y-0.1) * 360 / Float.pi)
+        live2dModel.setParam("ParamAngleZ", value: 0.6*faceNode.eulerAngles.z * -360 / Float.pi)
 //
         live2dModel.setParam("ParamBodyPosition", value: 10 + faceNode.position.z * 20)
         live2dModel.setParam("ParamBodyAngleZ", value: faceNode.position.x * 20)
@@ -225,18 +226,24 @@ public class AnimatedFaceLive2D: NSObject, GLKViewDelegate {
 
         live2dModel.setParam("ParamBrowLY", value: -(0.5 - avatarState.browOuterUpLeft))
         live2dModel.setParam("ParamBrowRY", value: -(0.5 - avatarState.browOuterUpRight))
-        live2dModel.setParam("ParamBrowLAngle", value: 16 * (avatarState.browInnerUp - avatarState.browOuterUpLeft) - 1.6)
-        live2dModel.setParam("ParamBrowRAngle", value: 16 * (avatarState.browInnerUp - avatarState.browOuterUpRight) - 1.6)
+        live2dModel.setParam("ParamBrowLAngle", value: 22 * (avatarState.browInnerUp - avatarState.browOuterUpLeft))
+        live2dModel.setParam("ParamBrowRAngle", value: 22 * (avatarState.browInnerUp - avatarState.browOuterUpRight))
 
+        live2dModel.setParam("ParamBrowLY", value: avatarState.browOuterUpLeft*5-1)
+        live2dModel.setParam("ParamBrowRY", value:  avatarState.browOuterUpRight*5-1)
+        
         live2dModel.setParam("ParamEyeLOpen", value: 1.0 - avatarState.eyeBlinkLeft)
         live2dModel.setParam("ParamEyeROpen", value: 1.0 - avatarState.eyeBlinkRight)
 
-        live2dModel.setParam("ParamMouthOpenY", value: avatarState.jawOpen * 1.8)
-        live2dModel.setParam("ParamMouthForm", value: 1 - avatarState.mouthFunnel * 2)
+        live2dModel.setParam("ParamMouthOpenY", value: 0.3+avatarState.jawOpen * 2.8)
+        live2dModel.setParam("ParamEyeLSmile", value: 0.1+avatarState.eyeSquintLeft * 2.8)
+//        live2dModel.setParam("ParamMouthForm", value: 1 - avatarState.mouthFunnel * 2)
+        
+        live2dModel.setParam("ParamEyeRSmile", value: avatarState.eyeSquintRight)
 
-        live2dModel.setParam("ParamCheek", value: avatarState.cheekPuff)
+        //live2dModel.setParam("ParamCheek", value: avatarState.cheekPuff)
 //        live2dModel.setParam("ParamBreath", value: Float(cos(Double(i) * 3.0) + 1.0) / 2.0)
-        live2dModel.setParam("ParamCheek", value: 0) // default value [-1.0, 1.0]
+        //live2dModel.setParam("ParamCheek", value: 0) // default value [-1.0, 1.0]
 //        print(Date().timeIntervalSince1970 - timeofcurrent) // 0.0166s
         self.timeofcurrent = Date().timeIntervalSince1970
     }

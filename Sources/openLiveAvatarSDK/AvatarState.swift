@@ -9,6 +9,8 @@ public struct AvatarState: Codable {
     var browInnerUp: Float
     var browOuterUpLeft: Float
     var browOuterUpRight: Float
+    var eyeSquintLeft: Float
+    var eyeSquintRight: Float
     var cheekPuff: Float
     var lookAtPoint : simd_float3
     var transform : simd_float4x4

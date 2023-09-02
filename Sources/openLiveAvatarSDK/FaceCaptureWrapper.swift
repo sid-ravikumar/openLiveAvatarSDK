@@ -104,11 +104,13 @@ extension FaceCaptureWrapper: ARSCNViewDelegate {
               let browOuterUpRight = faceAnchor.blendShapes[.browOuterUpRight] as? Float,
               let mouthFunnel = faceAnchor.blendShapes[.mouthFunnel] as? Float,
               let jawOpen = faceAnchor.blendShapes[.jawOpen] as? Float,
-              let cheekPuff = faceAnchor.blendShapes[.cheekPuff] as? Float
+              let cheekPuff = faceAnchor.blendShapes[.cheekPuff] as? Float,
+              let eyeSquintLeft = faceAnchor.blendShapes[.eyeSquintLeft] as? Float,
+                let eyeSquintRight = faceAnchor.blendShapes[.eyeSquintRight] as? Float
         else { return }
         
         if #available(iOS 12.0, *) {
-            let avatarState = AvatarState(eyeBlinkRight: eyeBlinkRight, eyeBlinkLeft: eyeBlinkLeft, mouthFunnel: mouthFunnel, jawOpen: jawOpen, id: self.emit_id, browInnerUp: browInnerUp, browOuterUpLeft: browOuterUpLeft, browOuterUpRight: browOuterUpRight, cheekPuff: cheekPuff, lookAtPoint: faceAnchor.lookAtPoint, transform: faceAnchor.transform)
+            let avatarState = AvatarState(eyeBlinkRight: eyeBlinkRight, eyeBlinkLeft: eyeBlinkLeft, mouthFunnel: mouthFunnel, jawOpen: jawOpen, id: self.emit_id, browInnerUp: browInnerUp, browOuterUpLeft: browOuterUpLeft, browOuterUpRight: browOuterUpRight,eyeSquintLeft: eyeSquintLeft, eyeSquintRight: eyeSquintRight, cheekPuff: cheekPuff, lookAtPoint: faceAnchor.lookAtPoint, transform: faceAnchor.transform)
             self.functionToEmitMessageFrom!(avatarState)
         } else {
             print("Unable to support older iOS!")
