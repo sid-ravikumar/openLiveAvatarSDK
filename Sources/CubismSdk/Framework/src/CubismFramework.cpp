@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Copyright(c) Live2D Inc. All rights reserved.
  *
  * Use of this source code is governed by the Live2D Open Software license
@@ -299,7 +299,6 @@ void CubismFramework::DeallocateAligned(void* address, const csmChar* fileName, 
 
     GetAllocator()->DeallocateAligned(address);
 }
-
 #else
 
 void* CubismFramework::Allocate(csmSizeType size)

@@ -4,15 +4,14 @@ import ObjcCubismSdk
 
 public class LiveAvatarController: NSObject {
     private let synchronizer: AvatarStateSynchronizer
-    private var avatars: [String: Avatar] = [:]
-    private var faceCaptureWrapper : FaceCaptureWrapper?
+    private var avatars : [String: AnimatedFaceSceneView] = [:]
+    private var faceCaptureView : FaceCaptureView!
     private var timeofcurrent = Date().timeIntervalSince1970
     
     public init(apiKey: String, channelName: String) {
         self.synchronizer = AvatarStateSynchronizer(apiKey: apiKey, channelName: channelName)
         super.init()
         
-        Live2DCubism.initL2D()
         print(Live2DCubism.live2DVersion() ?? "cannot get Live2DCubism.live2DVersion")
         
         print("Subscribed to the LiveAvatarController wiht all events")
@@ -29,20 +28,28 @@ public class LiveAvatarController: NSObject {
         }
     }
     
-    public func setupFaceCapture(addFaceCaptureToView: UIView, emitId: String) {
-        faceCaptureWrapper = FaceCaptureWrapper.init()
-        faceCaptureWrapper?.addEmitFunction(emittingFunc: self.emittingFromFacesceneWrapperCallback, id: emitId)
-        faceCaptureWrapper?.addToUIWindow(view: addFaceCaptureToView)
-        faceCaptureWrapper?.startCapture()
+    public func setupFaceCaptureViewAndAddToView(addFaceCaptureToView: UIView, emitId: String) {
+        faceCaptureView = FaceCaptureView.init()
+        faceCaptureView.addEmitFunctionAndId(emittingFunc: self.emittingFromFacesceneWrapperCallback, id: emitId)
+        faceCaptureView.addToUIWindow(view: addFaceCaptureToView)
+        faceCaptureView.startCapture()
+    }
+    
+    public func faceCaptureAddEmit(faceCaptureToView: FaceCaptureView) {
+        faceCaptureToView.addEmitFunction(emittingFunc: self.emittingFromFacesceneWrapperCallback)
+    }
+    
+    public func faceCaptureAddEmitAndId(faceCaptureToView: FaceCaptureView, emit_id : String) {
+        faceCaptureToView.addEmitFunctionAndId(emittingFunc: self.emittingFromFacesceneWrapperCallback, id: emit_id)
     }
     
     public func addLiveAvatarFromTargetId(frame: CGRect, addLiveAvatarToView:UIView, emitId: String) -> UIView {
-        let wrapper = AnimatedFaceSceneListenerWrapper(frame: frame, id: emitId)
-        self.addAvatar(id: emitId, avatar: wrapper)
+        let wrapper = AnimatedFaceSceneView(frame: frame, id: emitId)
+        self.addAvatar(avatar: wrapper)
         return wrapper.addToUIWindow(view: addLiveAvatarToView, frame: frame)
     }
     
-    public func emittingFromFacesceneWrapperCallback( avatarState : AvatarState){
+    public func emittingFromFacesceneWrapperCallback( avatarState : AvatarState ){
 //      print("emitting: " + avatarState.id)
         updateAvatars(with: avatarState)
 //        do {
@@ -52,12 +59,20 @@ public class LiveAvatarController: NSObject {
 //        }
     }
     
-    public func addAvatar(id: String, avatar: Avatar) {
-        avatars[id] = avatar
+    public func addAvatar(avatar: AnimatedFaceSceneView) {
+        if let avatar_id_unwrapped = avatar.id {
+            avatars[avatar_id_unwrapped] = avatar
+        } else {
+            print("AnimatedFaceSceneView ID is unset!")
+        }
     }
 
-    public func removeAvatar(id: String) {
-        avatars.removeValue(forKey: id)
+    public func removeAvatar(avatar: AnimatedFaceSceneView) {
+        if let avatar_id_unwrapped = avatar.id {
+            avatars.removeValue(forKey: avatar_id_unwrapped)
+        } else {
+            print("AnimatedFaceSceneView ID is unset!")
+        }
     }
 
     private func updateAvatars(with state: AvatarState) {

@@ -97,6 +97,8 @@ static Allocator _allocator;
 	if (self = [super init]) {
 		NSURL *url = [NSURL fileURLWithPath:jsonPath];
 		NSData *jsonData = [NSData dataWithContentsOfURL:url];
+//        NSString *str = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+//        NSLog(@"%@", str);
 
 		_modelSetting = new CubismModelSettingJson((const unsigned char *)[jsonData bytes], (unsigned int)[jsonData length]);
 		_baseUrl = [url URLByDeletingLastPathComponent];

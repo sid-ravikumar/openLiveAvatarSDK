@@ -9,16 +9,20 @@ import Foundation
 import ARKit
 import SceneKit
 
-public class FaceCaptureWrapper: NSObject {
+public class FaceCaptureView: ARSCNView {
     
-    public var emit_id: String = ""
-    public var frontARSCNView = ARSCNView()
+    @objc @IBInspectable var emit_id: String?
     private var timeofcurrent = Date().timeIntervalSince1970
     var functionToEmitMessageFrom : ((AvatarState) -> Void)?
     
-    public func addEmitFunction(emittingFunc: @escaping ((AvatarState) -> Void), id: String) {
+    
+    public func addEmitFunctionAndId(emittingFunc: @escaping ((AvatarState) -> Void), id: String) {
         self.functionToEmitMessageFrom = emittingFunc
         self.emit_id = id
+    }
+    
+    public func addEmitFunction(emittingFunc: @escaping ((AvatarState) -> Void)) {
+        self.functionToEmitMessageFrom = emittingFunc
     }
     
     public func startCapture() {
@@ -27,17 +31,17 @@ public class FaceCaptureWrapper: NSObject {
             return
         }
         print("Face tracking is supported")
-        frontARSCNView.delegate = self
-        frontARSCNView.session.delegate = self
+        self.delegate = self
+        self.session.delegate = self
         setupARFaceTracking()
     }
     
     public func addToUIWindow(view: UIView){
-        view.addSubview(frontARSCNView)
+        view.addSubview(self)
     }
 }
 
-extension FaceCaptureWrapper: ARSessionDelegate {
+extension FaceCaptureView: ARSessionDelegate {
     /// ARFaceTrackingSetup
     func setupARFaceTracking() {
         // check if the device supports ARFaceTracking
@@ -55,7 +59,7 @@ extension FaceCaptureWrapper: ARSessionDelegate {
             print("Turning maximumNumberOfTrackedFaces to 0")
         } // default value is one
         
-        frontARSCNView.session.run(configuration, options: [.resetTracking, .removeExistingAnchors])
+        self.session.run(configuration, options: [.resetTracking, .removeExistingAnchors])
     }
 
     public func session(_: ARSession, didFailWithError error: Error) {
@@ -88,7 +92,7 @@ extension FaceCaptureWrapper: ARSessionDelegate {
     }
 }
 
-extension FaceCaptureWrapper: ARSCNViewDelegate {
+extension FaceCaptureView: ARSCNViewDelegate {
     // MARK: - Properties
     // MARK: - ARSCNViewDelegate
     /// - Tag: ARNodeTracking
@@ -106,12 +110,16 @@ extension FaceCaptureWrapper: ARSCNViewDelegate {
               let jawOpen = faceAnchor.blendShapes[.jawOpen] as? Float,
               let cheekPuff = faceAnchor.blendShapes[.cheekPuff] as? Float,
               let eyeSquintLeft = faceAnchor.blendShapes[.eyeSquintLeft] as? Float,
-                let eyeSquintRight = faceAnchor.blendShapes[.eyeSquintRight] as? Float
+              let eyeSquintRight = faceAnchor.blendShapes[.eyeSquintRight] as? Float
         else { return }
         
         if #available(iOS 12.0, *) {
-            let avatarState = AvatarState(eyeBlinkRight: eyeBlinkRight, eyeBlinkLeft: eyeBlinkLeft, mouthFunnel: mouthFunnel, jawOpen: jawOpen, id: self.emit_id, browInnerUp: browInnerUp, browOuterUpLeft: browOuterUpLeft, browOuterUpRight: browOuterUpRight,eyeSquintLeft: eyeSquintLeft, eyeSquintRight: eyeSquintRight, cheekPuff: cheekPuff, lookAtPoint: faceAnchor.lookAtPoint, transform: faceAnchor.transform)
-            self.functionToEmitMessageFrom!(avatarState)
+            if let emit_id_unwrapped = self.emit_id {
+                let avatarState = AvatarState(eyeBlinkRight: eyeBlinkRight, eyeBlinkLeft: eyeBlinkLeft, mouthFunnel: mouthFunnel, jawOpen: jawOpen, id: emit_id_unwrapped, browInnerUp: browInnerUp, browOuterUpLeft: browOuterUpLeft, browOuterUpRight: browOuterUpRight,eyeSquintLeft: eyeSquintLeft, eyeSquintRight: eyeSquintRight, cheekPuff: cheekPuff, lookAtPoint: faceAnchor.lookAtPoint, transform: faceAnchor.transform)
+                self.functionToEmitMessageFrom!(avatarState)
+            } else {
+                print("Emit Id not defined.")
+            }
         } else {
             print("Unable to support older iOS!")
         }
